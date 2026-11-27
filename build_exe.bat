@@ -9,7 +9,8 @@ rem  For Windows 7 + 10 + 11 HMI PCs build with Python 3.8.10 (the last
 rem  Python for Windows 7). Set PY below to that python.exe.
 rem ======================================================================
 setlocal
-set PY=py -3.8
+rem PY can be set before calling this file (the GitHub release workflow does).
+if not defined PY set PY=py -3.8
 rem set PY=C:\Python38\python.exe
 
 cd /d "%~dp0"
