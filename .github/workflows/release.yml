@@ -36,7 +36,8 @@ jobs:
           TAG_INPUT: ${{ inputs.tag }}
         run: |
           $tag = if ($env:REF_TYPE -eq 'tag') { $env:REF_NAME } else { $env:TAG_INPUT.Trim() }
-          if ($tag -notmatch '^v(\d+)\.(\d+)\.(\d+)$') { throw "Tag must look like v1.2.3, got '$tag'" }
+          # -cnotmatch: case-sensitive, so 'V1.0.0' is refused too (PowerShell's -notmatch ignores case)
+          if ($tag -cnotmatch '^v(\d+)\.(\d+)\.(\d+)$') { throw "Tag must look like v1.2.3, got '$tag' (lowercase v)" }
           $major, $minor, $patch = $Matches[1], $Matches[2], $Matches[3]
           $v = $tag.Substring(1)
           $errors = @()
