@@ -71,6 +71,8 @@ Full operating notes: [README.txt](README.txt) (also shipped next to the .exe).
 | `llw_core.py` | monitoring engine, expression parser, reports |
 | `llw_tray.py` | tray icon (ctypes, no extra packages) |
 | `build_exe.bat`, `version_info.txt`, `llw.ico` | .exe build |
+| `tools/collect_licenses.py` | writes `THIRD_PARTY_LICENSES.txt` during the .exe build |
+| `THIRD_PARTY_NOTICES.md` | software by others and its licences |
 
 Created at runtime and **not** part of the repository: `logloss_watcher_config.json`
 and `history\`. They contain data log names, PLC addresses, trigger expressions and
@@ -105,3 +107,7 @@ FactoryTalk View version or for Rockwell support.
 ## License
 
 MIT – see [LICENSE](LICENSE).
+
+Uses pylogix (Apache-2.0), Python and tkinter (PSF License) and Tcl/Tk (BSD-style):
+see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The .exe build writes their full texts to
+`THIRD_PARTY_LICENSES.txt` next to the .exe; keep it there when you copy the folder.

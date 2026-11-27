@@ -113,3 +113,10 @@ CHANGES IN 1.6
 CHANGES IN 1.6.1
   + Can be built as LogLoss_Watcher.exe (build_exe.bat). As .exe, config and history are kept
     in the folder of the .exe; Windows start-up starts the .exe directly.
+
+LICENCES
+  LogLoss Watcher: MIT (LICENSE). It uses pylogix (Apache-2.0), Python + tkinter (PSF License)
+  and Tcl/Tk (BSD-style). Their full texts are in THIRD_PARTY_LICENSES.txt next to the .exe -
+  keep that file in the folder when you copy it.
+  Not affiliated with or endorsed by Rockwell Automation. FactoryTalk is a trademark of
+  Rockwell Automation, Inc.
