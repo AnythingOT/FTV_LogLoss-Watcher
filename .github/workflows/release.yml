@@ -1,7 +1,7 @@
 name: Build Windows exe
 
 # Publish a release either way:
-#  - push a tag like v1.6.1, or
+#  - push a tag like v2.0.0, or
 #  - Actions tab -> "Build Windows exe" -> Run workflow, and enter a tag.
 # Run it with the tag left empty to only build a downloadable artifact.
 #
@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag to publish, e.g. v1.6.1 (leave empty to only build)"
+        description: "Release tag to publish, e.g. v2.0.0 (leave empty to only build)"
         required: false
         default: ""
 

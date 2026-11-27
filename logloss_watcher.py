@@ -20,7 +20,7 @@ import llw_tray
 
 APP = "LogLoss Watcher"
 SUBTITLE = "for FTView SE DataLog Models"
-VERSION = "1.6.1"
+VERSION = "2.0.0"
 FROZEN = bool(getattr(sys, "frozen", False))           # True when running as the built .exe
 # Config and history live next to the .exe (or the .py). Never next to __file__ in a frozen build:
 # in a one-file .exe that is a temporary folder that Windows deletes when the program closes.
@@ -31,7 +31,16 @@ DATA_DIR = APP_DIR / "history"
 HEARTBEAT = DATA_DIR / "heartbeat.txt"
 MAX_HISTORY = 5000
 
-C_HEAD = "#22313f"
+BRAND = "AnythingOT"
+# AnythingOT look (same palette as FTV_Diagnostics-Filter and FTV_DLP-Reporting-Tool):
+# navy header, orange accent, light grey background. Status colours below are NOT branding:
+# they mean OK / critical / warning and stay as they are.
+FONT = "Segoe UI"
+NAVY, NAVY_2, NAVY_3 = "#0F1B2D", "#1C2B42", "#2A3B55"
+ACCENT, ACCENT_DARK = "#F28C28", "#D9771A"
+BG, CARD, BORDER = "#F3F5F8", "#FFFFFF", "#DDE2E9"
+TEXT, MUTED, HEAD_MUTED = "#1F2937", "#6B7280", "#9FB0C8"
+SELECT, BUTTON, BUTTON_HOVER, FOOTER = "#FDE7D1", "#EEF1F5", "#E2E7EE", "#E9EDF2"
 C_OK, C_BAD, C_WARN, C_GREY, C_INFO = "#2e7d32", "#c62828", "#ef6c00", "#757575", "#1565c0"
 STATE_BG = {"Started": "#e3f4e3", "Stopped": "#ffffff", "Critical": "#ffd6d6", "Warning": "#ffe7c2",
             "Unknown": "#e4e4e4",
@@ -62,8 +71,8 @@ class ToolTip:
         self.tip.overrideredirect(True)
         self.tip.geometry("+{}+{}".format(self.w.winfo_rootx() + 12,
                                           self.w.winfo_rooty() + self.w.winfo_height() + 4))
-        tk.Label(self.tip, text=self.text, bg="#ffffe0", relief="solid", bd=1, justify="left",
-                 wraplength=380, padx=6, pady=3).pack()
+        tk.Label(self.tip, text=self.text, bg=NAVY, fg="white", bd=0, justify="left",
+                 font=(FONT, 9), wraplength=380, padx=10, pady=6).pack()
 
     def _hide(self, _e=None):
         if self.tip:
@@ -162,7 +171,9 @@ class PickDialog(simpledialog.Dialog):
         self.fv.trace_add("write", lambda *a: self._fill())
         e = ttk.Entry(master, textvariable=self.fv, width=56)
         e.grid(row=0, column=1, sticky="we", pady=4)
-        self.lb = tk.Listbox(master, selectmode="extended", width=76, height=22, activestyle="none")
+        self.lb = tk.Listbox(master, selectmode="extended", width=76, height=22, activestyle="none",
+                             selectbackground=SELECT, selectforeground=TEXT, highlightcolor=ACCENT,
+                             highlightbackground=BORDER, relief="flat", bd=0)
         sb = ttk.Scrollbar(master, command=self.lb.yview)
         self.lb.config(yscrollcommand=sb.set)
         self.lb.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=4)
@@ -611,40 +622,120 @@ class App:
 
     # ---------------------------------------------------------------- look & feel
     def _style(self):
-        st = ttk.Style(self.root)
-        for theme in ("vista", "winnative", "clam"):
-            if theme in st.theme_names():
-                st.theme_use(theme)
-                break
-        self.root.option_add("*Font", ("Segoe UI", 9))
-        st.configure(".", font=("Segoe UI", 9))
-        st.configure("Treeview", rowheight=24)
-        for opt in ("foreground", "background"):     # Tk 8.6.9: row colours need this
+        """AnythingOT look on Tk's 'clam' theme (no extra package; same as the other AnythingOT tools)."""
+        r = self.root
+        r.configure(bg=BG)
+        r.option_add("*Font", (FONT, 9))
+        # dialogs (PIN, export, incident, pickers) are classic Tk frames: same grey as the window.
+        # Widgets that set their own colour (alarm banner, header) are not affected.
+        r.option_add("*Toplevel.background", BG)
+        r.option_add("*Frame.background", BG)
+        st = ttk.Style(r)
+        st.theme_use("clam")
+        st.configure(".", background=BG, foreground=TEXT, font=(FONT, 9), bordercolor=BORDER,
+                     lightcolor=BORDER, darkcolor=BORDER, focuscolor=ACCENT, troughcolor=BG,
+                     selectbackground=SELECT, selectforeground=TEXT)
+        # labels and frames
+        st.configure("Hint.TLabel", foreground=MUTED)
+        st.configure("Big.TLabel", font=(FONT, 11, "bold"))
+        st.configure("Footer.TLabel", background=FOOTER, foreground=TEXT)
+        st.configure("TLabelframe", background=BG, bordercolor=BORDER, lightcolor=BG, darkcolor=BG)
+        st.configure("TLabelframe.Label", background=BG, foreground=MUTED, font=(FONT, 9, "bold"))
+        st.configure("Section.TLabelframe", background=BG, bordercolor=BORDER)
+        st.configure("Section.TLabelframe.Label", background=BG, foreground=MUTED, font=(FONT, 9, "bold"))
+        st.configure("TSeparator", background=BORDER)
+        # buttons
+        st.configure("TButton", padding=(10, 4), background=BUTTON, relief="flat", anchor="center")
+        st.map("TButton", background=[("disabled", "#F3F4F6"), ("pressed", "#D5DBE3"), ("active", BUTTON_HOVER)],
+               foreground=[("disabled", "#A0A7B4")])
+        st.configure("Accent.TButton", background=ACCENT, foreground="white", font=(FONT, 9, "bold"),
+                     bordercolor=ACCENT, lightcolor=ACCENT, darkcolor=ACCENT)
+        st.map("Accent.TButton",
+               background=[("disabled", "#E5C3A1"), ("pressed", ACCENT_DARK), ("active", ACCENT_DARK)],
+               foreground=[("disabled", "white")],
+               bordercolor=[("disabled", "#E5C3A1"), ("active", ACCENT_DARK)],
+               lightcolor=[("disabled", "#E5C3A1"), ("active", ACCENT_DARK)],
+               darkcolor=[("disabled", "#E5C3A1"), ("active", ACCENT_DARK)])
+        st.configure("Footer.TButton", background=FOOTER, foreground=ACCENT_DARK, padding=(8, 2),
+                     bordercolor=FOOTER, lightcolor=FOOTER, darkcolor=FOOTER)
+        st.map("Footer.TButton", background=[("active", "#DDE3EA")], foreground=[("disabled", "#A0A7B4")])
+        # check boxes and radio buttons
+        for w in ("TCheckbutton", "TRadiobutton"):
+            st.configure(w, background=BG, indicatorbackground="white", indicatorforeground="white",
+                         upperbordercolor="#B8C0CC", lowerbordercolor="#B8C0CC")
+            st.map(w, background=[("active", BG)],
+                   indicatorbackground=[("selected", ACCENT), ("pressed", SELECT)],
+                   upperbordercolor=[("selected", ACCENT)], lowerbordercolor=[("selected", ACCENT)])
+        # entry fields
+        for w in ("TEntry", "TSpinbox", "TCombobox"):
+            st.configure(w, fieldbackground="white", padding=3, arrowcolor=MUTED, insertcolor=TEXT)
+            st.map(w, bordercolor=[("focus", ACCENT)], lightcolor=[("focus", ACCENT)],
+                   fieldbackground=[("readonly", "white"), ("disabled", "#F3F4F6")])
+        st.map("TCombobox", selectbackground=[("readonly", "white")], selectforeground=[("readonly", TEXT)],
+               bordercolor=[("focus", ACCENT)], lightcolor=[("focus", ACCENT)],
+               fieldbackground=[("readonly", "white"), ("disabled", "#F3F4F6")])
+        r.option_add("*TCombobox*Listbox.selectBackground", SELECT)
+        r.option_add("*TCombobox*Listbox.selectForeground", TEXT)
+        # tables: row height from the font, so rows do not clip on high-DPI screens
+        try:
+            import tkinter.font as tkfont
+            row_h = max(24, tkfont.nametofont("TkDefaultFont").metrics("linespace") + 8)
+        except Exception:
+            row_h = 24
+        st.configure("Treeview", background=CARD, fieldbackground=CARD, foreground=TEXT, rowheight=row_h,
+                     bordercolor=BORDER)
+        st.configure("Treeview.Heading", background=BUTTON, foreground=TEXT, font=(FONT, 9, "bold"),
+                     relief="flat", padding=(6, 4))
+        st.map("Treeview.Heading", background=[("active", BUTTON_HOVER)])
+        st.map("Treeview", background=[("selected", SELECT)], foreground=[("selected", TEXT)])
+        for opt in ("foreground", "background"):     # Tk 8.6.9: row colours (status) need this
             try:
                 st.map("Treeview", **{opt: [e for e in st.map("Treeview", query_opt=opt)
                                             if e[:2] != ("!disabled", "!selected")]})
             except Exception:
                 pass
-        st.configure("Treeview.Heading", font=("Segoe UI", 9, "bold"))
-        st.configure("TNotebook.Tab", padding=(14, 5))
-        st.configure("Section.TLabelframe.Label", font=("Segoe UI", 9, "bold"))
-        st.configure("Hint.TLabel", foreground=C_GREY)
-        st.configure("Big.TLabel", font=("Segoe UI", 11, "bold"))
-        st.configure("Accent.TButton", font=("Segoe UI", 9, "bold"))
+        # tabs
+        st.configure("TNotebook", background=BG, bordercolor=BORDER, tabmargins=(0, 0, 0, 0))
+        st.configure("TNotebook.Tab", background=BUTTON, foreground=MUTED, padding=(14, 5),
+                     bordercolor=BORDER, lightcolor=BUTTON)
+        st.map("TNotebook.Tab", background=[("selected", CARD), ("active", BUTTON_HOVER)],
+               foreground=[("selected", TEXT)], lightcolor=[("selected", ACCENT)])
+        # scroll bars, split bars, progress
+        for o in ("Vertical", "Horizontal"):
+            st.configure(o + ".TScrollbar", background="#D5DBE3", troughcolor=CARD, bordercolor=CARD,
+                         lightcolor="#D5DBE3", darkcolor="#D5DBE3", arrowcolor=MUTED, gripcount=0)
+            st.map(o + ".TScrollbar", background=[("active", "#B8C0CC")])
+        st.configure("TPanedwindow", background=BG)
+        st.configure("Sash", sashthickness=8, gripcount=0, background=BG, lightcolor=BG, bordercolor=BG)
+        st.configure("TProgressbar", background=ACCENT, troughcolor="#E5E7EB", bordercolor="#E5E7EB",
+                     lightcolor=ACCENT, darkcolor=ACCENT, thickness=6)
 
     def _build_header(self):
-        h = tk.Frame(self.root, bg=C_HEAD)
+        h = tk.Frame(self.root, bg=NAVY, height=64)
         h.pack(fill="x")
-        tk.Label(h, text="  " + APP, bg=C_HEAD, fg="white", font=("Segoe UI", 15, "bold")).pack(side="left", pady=8)
-        tk.Label(h, text=SUBTITLE + ("   [SIMULATION]" if self.simulate else ""), bg=C_HEAD, fg="#b0bec5",
-                 font=("Segoe UI", 9)).pack(side="left", padx=10, pady=(12, 8))
+        h.pack_propagate(False)
+        mark = tk.Frame(h, bg=NAVY)
+        mark.pack(side="left", padx=(18, 0))
+        tk.Label(mark, text="Anything", bg=NAVY, fg="white", font=(FONT, 17, "bold")).pack(side="left")
+        tk.Label(mark, text="OT", bg=NAVY, fg=ACCENT, font=(FONT, 17, "bold")).pack(side="left")
+        tk.Frame(h, bg=NAVY_2, width=1).pack(side="left", fill="y", padx=16, pady=14)
+        title = tk.Frame(h, bg=NAVY)
+        title.pack(side="left")
+        tk.Label(title, text=APP, bg=NAVY, fg="white", font=(FONT, 13, "bold")).pack(anchor="w")
+        sub = tk.Frame(title, bg=NAVY)
+        sub.pack(anchor="w")
+        tk.Label(sub, text=SUBTITLE, bg=NAVY, fg=HEAD_MUTED, font=(FONT, 9)).pack(side="left")
+        if self.simulate:
+            tk.Label(sub, text="SIMULATION", bg=ACCENT, fg="white", font=(FONT, 8, "bold"),
+                     padx=6).pack(side="left", padx=(8, 0))
         self.badges = {}
-        for key, title in (("lock", "Setup"), ("alarms", "Critical"), ("client", "SE client"),
-                           ("engine", "Datalog service"), ("mon", "Monitoring")):
-            f = tk.Frame(h, bg=C_HEAD)
-            f.pack(side="right", padx=6, pady=6)
-            tk.Label(f, text=title, bg=C_HEAD, fg="#b0bec5", font=("Segoe UI", 8)).pack(anchor="w")
-            b = tk.Label(f, text="-", bg=C_GREY, fg="white", font=("Segoe UI", 9, "bold"), padx=10, pady=2, width=11)
+        for key, title_text in (("lock", "Setup"), ("alarms", "Critical"), ("client", "SE client"),
+                                ("engine", "Datalog service"), ("mon", "Monitoring")):
+            f = tk.Frame(h, bg=NAVY)
+            f.pack(side="right", padx=(0, 18) if key == "lock" else 6)
+            tk.Label(f, text=title_text, bg=NAVY, fg=HEAD_MUTED, font=(FONT, 8)).pack(anchor="w")
+            # badge colours are status (OK / critical / warning), not branding
+            b = tk.Label(f, text="-", bg=C_GREY, fg="white", font=(FONT, 9, "bold"), padx=10, pady=2, width=11)
             b.pack()
             self.badges[key] = b
         self.badges["lock"].config(cursor="hand2")
@@ -656,16 +747,19 @@ class App:
             b.config(text=text, bg=color)
 
     def _build_statusbar(self):
-        sb = ttk.Frame(self.root, relief="sunken")
+        sb = tk.Frame(self.root, bg=FOOTER, height=30)
         sb.pack(side="bottom", fill="x")
-        self.sb_left = ttk.Label(sb, text="", padding=(8, 2))
+        sb.pack_propagate(False)
+        self.sb_left = ttk.Label(sb, text="", padding=(12, 2), style="Footer.TLabel")
         self.sb_left.pack(side="left")
         self.busy_bar = ttk.Progressbar(sb, mode="indeterminate", length=120)
-        self.busy_lbl = ttk.Label(sb, text="", foreground=C_INFO, padding=(6, 2))
+        self.busy_lbl = ttk.Label(sb, text="", foreground=C_INFO, padding=(6, 2), style="Footer.TLabel")
         self.jobs = {}
-        self.sb_lockbtn = ttk.Button(sb, text="Unlock setup...", command=self.toggle_lock)
+        tk.Label(sb, text="\u00a9 {}  \u00b7  {} v{}".format(BRAND, APP, VERSION), bg=FOOTER, fg=MUTED,
+                 font=(FONT, 9)).pack(side="right", padx=12)
+        self.sb_lockbtn = ttk.Button(sb, text="Unlock setup...", command=self.toggle_lock, style="Footer.TButton")
         self.sb_lockbtn.pack(side="right", padx=4, pady=2)
-        self.sb_right = ttk.Label(sb, text="", padding=(8, 2))
+        self.sb_right = ttk.Label(sb, text="", padding=(8, 2), style="Footer.TLabel")
         self.sb_right.pack(side="right")
 
     def job_start(self, text):

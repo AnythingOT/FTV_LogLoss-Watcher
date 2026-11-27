@@ -54,11 +54,11 @@ history are kept next to the .exe.
 If Windows 7 reports a missing `api-ms-win-crt-*.dll`, install the Universal C Runtime update.
 If an exe built on Windows 10 does not start on Windows 7, build it on Windows 7.
 
-**Release build.** Push a tag like `v1.6.1` (or run *Build Windows exe* in the Actions tab):
+**Release build.** Push a tag like `v2.0.0` (or run *Build Windows exe* in the Actions tab):
 `.github/workflows/release.yml` runs `build_exe.bat` with Python 3.8 and attaches
-`LogLoss_Watcher-v1.6.1.zip` (the whole folder) with a checksum to the release. It first checks
+`LogLoss_Watcher-v2.0.0.zip` (the whole folder) with a checksum to the release. It first checks
 that the tag matches `VERSION` in `logloss_watcher.py`, both versions in `version_info.txt` and a
-`## 1.6.1` section in `CHANGELOG.md`, so bump all four together. GitHub builds on Windows
+`## 2.0.0` section in `CHANGELOG.md`, so bump all four together. GitHub builds on Windows
 Server: test the zip on a Windows 7 HMI PC before relying on it there.
 
 ## Setup order
