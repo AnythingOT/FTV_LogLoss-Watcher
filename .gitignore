@@ -1,0 +1,32 @@
+# --- Runtime data: NEVER commit (data log names, PLC addresses, tag expressions, production history)
+logloss_watcher_config.json
+dl_watchdog_config.json
+*_config.json
+history/
+*.ico.tmp
+llw_ok.ico
+llw_issue.ico
+llw_warn.ico
+llw_off.ico
+LogLoss_incident_*.txt
+*.csv
+
+# --- Exports and logs
+*.log
+
+# --- Python
+__pycache__/
+*.py[cod]
+.venv*/
+venv/
+
+# --- PyInstaller build output
+build/
+dist/
+*.spec
+
+# --- Editors / OS
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
