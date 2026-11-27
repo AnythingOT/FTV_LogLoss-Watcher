@@ -52,6 +52,13 @@ history are kept next to the .exe.
 If Windows 7 reports a missing `api-ms-win-crt-*.dll`, install the Universal C Runtime update.
 If an exe built on Windows 10 does not start on Windows 7, build it on Windows 7.
 
+**Release build.** Push a tag like `v1.6.1` (or run *Build Windows exe* in the Actions tab):
+`.github/workflows/release.yml` runs `build_exe.bat` with Python 3.8 and attaches
+`LogLoss_Watcher-v1.6.1.zip` (the whole folder) with a checksum to the release. It first checks
+that the tag matches `VERSION` in `logloss_watcher.py`, both versions in `version_info.txt` and a
+`## 1.6.1` section in `CHANGELOG.md`, so bump all four together. GitHub builds on Windows
+Server: test the zip on a Windows 7 HMI PC before relying on it there.
+
 ## Setup order
 
 1. **Settings** – datalog folder, retention days, process names, *Log-only mode* for the first week.
@@ -71,6 +78,7 @@ Full operating notes: [README.txt](README.txt) (also shipped next to the .exe).
 | `llw_core.py` | monitoring engine, expression parser, reports |
 | `llw_tray.py` | tray icon (ctypes, no extra packages) |
 | `build_exe.bat`, `version_info.txt`, `llw.ico` | .exe build |
+| `.github/workflows/release.yml` | release build on GitHub (runs `build_exe.bat`) |
 | `tools/collect_licenses.py` | writes `THIRD_PARTY_LICENSES.txt` during the .exe build |
 | `THIRD_PARTY_NOTICES.md` | software by others and its licences |
 
