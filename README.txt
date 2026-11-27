@@ -1,4 +1,4 @@
-LOGLOSS WATCHER 1.6.1 - for FTView SE DataLog Models
+LOGLOSS WATCHER 2.0.0 - for FTView SE DataLog Models
 ====================================================
 
 FILES (keep together in one folder on C:, e.g. C:\Users\<you>\LogLossWatcher\ -
@@ -109,6 +109,10 @@ RESOURCES
 CHANGES IN 1.6
   + PC / datalog service restart tracking (history category "Service")
   + Incident report (TXT) for support cases
+
+CHANGES IN 2.0.0
+  + New look (AnythingOT): navy header, orange buttons, light grey window. Status colours
+    and the red Critical banner are unchanged. No change to what is checked or how.
 
 CHANGES IN 1.6.1
   + Can be built as LogLoss_Watcher.exe (build_exe.bat). As .exe, config and history are kept
