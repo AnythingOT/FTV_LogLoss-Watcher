@@ -17,7 +17,7 @@ that shows when, for how long and around what it happened.
 
 It never writes to the PLC, never starts or stops data logs and never opens the `.DAT` files for reading.
 
-> Start/stop is **inferred** from file growth. Exact data log start/stop times are in the DAT files.
+<img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/c3c1fad0-40e0-4425-a565-2a039aed9eff" />
 
 ## Requirements
 
